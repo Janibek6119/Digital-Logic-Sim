@@ -14,6 +14,8 @@ namespace DLS.ChipCreation
 
 		public float Width { get; private set; }
 		public float Height { get; private set; }
+		public float GridDiscretization { get => gridDiscretization; }
+		public Bounds ColliderBounds { get => backgroundCollider.bounds; }
 
 		[SerializeField] MeshRenderer background;
 		[SerializeField] BoxCollider2D backgroundCollider;
@@ -26,6 +28,7 @@ namespace DLS.ChipCreation
 		[SerializeField, Range(0, 1)] float thicknessT;
 		[SerializeField] float offsetY;
 		[SerializeField] float ioBarPadding;
+		[SerializeField] float gridDiscretization;
 
 		[SerializeField] Color outlineCol;
 		[SerializeField] Color backgroundCol;

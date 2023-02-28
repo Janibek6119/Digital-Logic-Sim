@@ -63,6 +63,61 @@ namespace DLS.ChipCreation
 
 		}
 
+		public static Vector2 CalculateAxisSnappedMousePosition(Vector2 origin, bool snap, bool gridSnap, float gridDiscretization, Bounds? absBounds = null)
+		{
+			Vector2 snappedMousePos = CalculateAxisSnappedMousePosition(origin, snap);
+			if (gridSnap)
+			{
+				snappedMousePos = GetDiscretizedVector(snappedMousePos, absBounds, gridDiscretization);
+			}
+			return snappedMousePos;
+		}
+
+		private static Vector2 GetDiscretizedVector(Vector2 origin, Bounds? absBounds, float discretization)
+		{
+			float discretizedX = GetDiscretizedFloat(origin.x, discretization, absBounds?.min.x, absBounds?.max.x);
+			float discretizedY = GetDiscretizedFloat(origin.y, discretization, absBounds?.min.y, absBounds?.max.y);
+			return new Vector2(discretizedX, discretizedY);
+		}
+
+		private static float GetDiscretizedFloat(float value, float discretization, float? absLowerBoundary, float? absHigherBoundary)
+		{
+			// If boundaries set, restrict the input value
+			if (value > absHigherBoundary) value = absHigherBoundary.Value;
+			if (value < absLowerBoundary) value = absLowerBoundary.Value;
+
+			int steps = Mathf.FloorToInt(value / discretization);
+			float adjacentLower = discretization * steps;
+			float adjacentHigher = adjacentLower + discretization;
+			float distanceDown = value - adjacentLower;
+			float distanceUp = adjacentHigher - value;
+
+			if (distanceDown < distanceUp)
+			{
+				// If closer number violates boundary, return another one
+				if (adjacentLower < absLowerBoundary)
+				{
+					return adjacentHigher;
+				}
+				else
+				{
+					return adjacentLower;
+				}
+			}
+			else
+			{
+				// If closer number violates boundary, return another one
+				if (adjacentHigher > absHigherBoundary)
+				{
+					return adjacentLower;
+				}
+				else
+				{
+					return adjacentHigher;
+				}
+			}
+		}
+
 		static Camera Cam
 		{
 			get

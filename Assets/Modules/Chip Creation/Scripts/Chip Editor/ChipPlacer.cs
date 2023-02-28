@@ -147,7 +147,10 @@ namespace DLS.ChipCreation
 			bool snapping = shiftKeyDown && busPlacementPoints != null && busPlacementPoints.Count > 0;
 			Vector2 snapOrigin = snapping ? busPlacementPoints[^1] : Vector2.zero;
 
-			Vector2 mousePos = MouseHelper.CalculateAxisSnappedMousePosition(snapOrigin, snapping);
+			bool gridSnap = Keyboard.current.ctrlKey.isPressed;
+			float gridDiscretization = chipEditor.WorkArea.GridDiscretization;
+			Bounds bounds = chipEditor.WorkArea.ColliderBounds;
+			Vector2 mousePos = MouseHelper.CalculateAxisSnappedMousePosition(snapOrigin, snapping, gridSnap, gridDiscretization, bounds);
 
 			// Update position while placing first pin
 			if (placementState == BusDisplay.PlacementState.PlacingFirstPin)
