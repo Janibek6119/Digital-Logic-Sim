@@ -31,6 +31,37 @@ Transform:
   m_Father: {fileID: 7802364574630514813}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &920701536622795045
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1423936280818248732}
+  m_Layer: 0
+  m_Name: BGGrid
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1423936280818248732
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 920701536622795045}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1335138428483802841}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1113992544801467670
 GameObject:
   m_ObjectHideFlags: 0
@@ -120,7 +151,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 16.689058, y: 9.22375, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1423936280818248732}
   m_Father: {fileID: 8147988980805762151}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1035,7 +1067,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09a64f6113a5f4b4ea280b66bdac801a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allowMultipleInputsPerPin: 1
   wirePrefab: {fileID: 8097069101291120038, guid: dd239220b213e344f9c67902a0c065bb, type: 3}
   wireHolder: {fileID: 7802364572915818339}
 --- !u!1 &7884830163750747071
@@ -1131,6 +1162,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8147988980805762151}
   - component: {fileID: 6044386257386465284}
+  - component: {fileID: 2438388132067942782}
   m_Layer: 0
   m_Name: Work Area
   m_TagString: Untagged
@@ -1183,5 +1215,22 @@ MonoBehaviour:
   thicknessT: 0.095
   offsetY: 0.275
   ioBarPadding: 0.57
+  gridDiscretization: 0.225
   outlineCol: {r: 0.4245283, g: 0.4245283, b: 0.4245283, a: 1}
   backgroundCol: {r: 0.20644067, g: 0.20644067, b: 0.21, a: 1}
+--- !u!114 &2438388132067942782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8928738132451348638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7065f7b13feb6fc49a408819c71d90d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HLine: {fileID: 9161062477817811252, guid: f401c3c849bc1ce45afd55476e46575b, type: 3}
+  VLine: {fileID: 7523341667497137670, guid: c678a3f0472c24c4b9eb46c563b73b40, type: 3}
+  container: {fileID: 920701536622795045}
+  thickness: 0.0005
