@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using System.Collections.ObjectModel;
 using DLS.ChipData;
 using System.Linq;
@@ -148,6 +149,15 @@ namespace DLS.ChipCreation
 		{
 			float posY = MouseHelper.GetMouseWorldPosition().y;
 			float posX = GetPosX(isInputPin);
+			// TODO the line below is written the same anywhere to ease the search
+			// and thus, to ease the future refactor
+			// that is, to come up with a better way to turn grid on/off than this
+			bool gridSnap = Keyboard.current.ctrlKey.isPressed;
+			if (gridSnap)
+			{
+				Bounds bounds = chipEditor.WorkArea.ColliderBounds;
+				posY = MouseHelper.GetDiscretizedFloat(posY, chipEditor.WorkArea.GridDiscretization, bounds.min.y, bounds.max.y);
+			}
 			return new Vector3(posX, posY, RenderOrder.EditablePin);
 		}
 
