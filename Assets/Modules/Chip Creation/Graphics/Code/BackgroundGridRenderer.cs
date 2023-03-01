@@ -41,7 +41,7 @@ public class BackgroundGridRenderer : MonoBehaviour
 			Destroy(child.gameObject);
 		}
 		float discretization = workArea.GridDiscretization;
-		Vector3 offset = new Vector3(0, 0, -0.01f);
+		Vector3 offset = new Vector3(0, 0, RenderOrder.BackgroundOutline);
 		Bounds bounds = workArea.ColliderBounds;
 		Vector2 boundsDiagonal = bounds.max - bounds.min;
 		float YThickness = thickness * boundsDiagonal.x / boundsDiagonal.y;
@@ -62,7 +62,7 @@ public class BackgroundGridRenderer : MonoBehaviour
 			{
 				float y = minDiscreteY + i * discretization;
 				float x = minDiscreteX + j * discretization;
-				GameObject obj = Instantiate(HLine, new Vector3(x, y, -0.01f), Quaternion.identity, container.transform);
+				GameObject obj = Instantiate(HLine, new Vector3(x, y, RenderOrder.BackgroundOutline), Quaternion.identity, container.transform);
 				obj.transform.localScale = new Vector3(thickness * 2, YThickness * 2, obj.transform.localScale.z);
 			}
 		}
@@ -75,8 +75,8 @@ public class BackgroundGridRenderer : MonoBehaviour
 			Destroy(child.gameObject);
 		}
 		float discretization = workArea.GridDiscretization;
-		Vector3 HOffset = new Vector3(0, 0, -0.01f);
-		Vector3 VOffset = new Vector3(container.transform.position.x, container.transform.position.y, -0.01f);
+		Vector3 HOffset = new Vector3(0, 0, RenderOrder.BackgroundOutline);
+		Vector3 VOffset = new Vector3(container.transform.position.x, container.transform.position.y, RenderOrder.BackgroundOutline);
 		Bounds bounds = workArea.ColliderBounds;
 		Vector2 boundsDiagonal = bounds.max - bounds.min;
 		float YThickness = thickness * boundsDiagonal.x / boundsDiagonal.y;
