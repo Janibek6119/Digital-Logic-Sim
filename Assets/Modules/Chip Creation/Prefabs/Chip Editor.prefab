@@ -1234,3 +1234,4 @@ MonoBehaviour:
   VLine: {fileID: 7523341667497137670, guid: c678a3f0472c24c4b9eb46c563b73b40, type: 3}
   container: {fileID: 920701536622795045}
   thickness: 0.0005
+  preferDotGrid: 1

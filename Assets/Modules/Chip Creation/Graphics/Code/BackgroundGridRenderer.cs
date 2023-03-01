@@ -13,12 +13,25 @@ public class BackgroundGridRenderer : MonoBehaviour
 	WorkArea workArea;
 
 	[SerializeField, Range(0, 0.005f)] float thickness;
+	[SerializeField] bool preferDotGrid;
 
 	void Start()
 	{
 		workArea = GetComponent<WorkArea>();
-		InstantiateDotGrid();
+		SpawnGrid();
 		container.SetActive(false);
+		workArea.WorkAreaResized += SpawnGrid;
+	}
+
+	void SpawnGrid() {
+		if (preferDotGrid)
+		{
+			InstantiateDotGrid();
+		}
+		else
+		{
+			InstantiateGrid();
+		}
 	}
 
 	void Update()
