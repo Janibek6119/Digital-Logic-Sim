@@ -20,6 +20,7 @@ namespace DLS.ChipCreation
 		[SerializeField] Color highlightedCol;
 		[SerializeField] Color selectedCol;
 		[SerializeField] MeshRenderer graphic;
+		public WorkArea workArea;
 
 		Material material;
 		bool isSelected;
@@ -27,8 +28,9 @@ namespace DLS.ChipCreation
 		Vector2 dragStartMousePos;
 		Vector2 dragStartPos;
 
-		public void SetUp()
+		public void SetUp(WorkArea workArea)
 		{
+			this.workArea = workArea;
 			MouseInteraction = new MouseInteraction<EditablePinHandle>(gameObject, this);
 
 			MouseInteraction.MouseEntered += OnMouseEnter;
@@ -60,6 +62,11 @@ namespace DLS.ChipCreation
 				float posY = dragStartPos.y + (mouseY - dragStartMousePos.y);
 				if (Mathf.Abs(posY - editablePin.transform.position.y) > 0.0001f)
 				{
+					bool gridSnap = Keyboard.current.ctrlKey.isPressed;
+					if (gridSnap) {
+						Bounds bounds = workArea.ColliderBounds;
+						posY = MouseHelper.GetDiscretizedFloat(posY, workArea.GridDiscretization, bounds.min.y, bounds.max.y);
+					}
 					editablePin.transform.position = new Vector3(dragStartPos.x, posY, RenderOrder.EditablePinPreview);
 					HandleMoved?.Invoke(editablePin);
 					editablePin.GetPin().NotifyMoved();

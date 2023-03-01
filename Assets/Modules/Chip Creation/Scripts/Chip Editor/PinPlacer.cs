@@ -115,7 +115,7 @@ namespace DLS.ChipCreation
 		void AddPin(bool isInputPin, Vector2 pos, string name, bool select, string themeName, int id)
 		{
 			var editablePin = SpawnPin(pos);
-			editablePin.SetUp(isInputPin, name, chipEditor.ColourThemes.GetTheme(themeName), id);
+			editablePin.SetUp(isInputPin, name, chipEditor.ColourThemes.GetTheme(themeName), id, chipEditor.WorkArea);
 
 
 			(isInputPin ? inputPins : outputPins).Add(editablePin);
