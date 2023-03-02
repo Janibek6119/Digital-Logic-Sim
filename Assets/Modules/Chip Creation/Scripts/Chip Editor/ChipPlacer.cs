@@ -103,24 +103,33 @@ namespace DLS.ChipCreation
 			Bounds bounds = chip.GetBounds();
 			foreach (ChipBase otherChip in chipEditor.AllSubChips)
 			{
-				if (otherChip != chip && BoundsOverlap2D(otherChip.GetBounds(), bounds))
+				if (otherChip != chip && BoundsOverlap2DAllowNumericalError(otherChip.GetBounds(), bounds))
 				{
 					return false;
 				}
 			}
 			return !chipEditor.WorkArea.OutOfBounds(bounds);
+		}
 
-			bool BoundsOverlap2D(Bounds a, Bounds b)
+		private static bool BoundsOverlap2DAllowNumericalError(Bounds a, Bounds b, float allowedNumericalError = 0.001f)
+		{
+			if (a.size.x * a.size.y == 0 || b.size.x * b.size.y == 0)
 			{
-				if (a.size.x * a.size.y == 0 || b.size.x * b.size.y == 0)
-				{
-					return false;
-				}
-				bool overlapX = b.min.x < a.max.x && b.max.x > a.min.x;
-				bool overlapY = b.min.y < a.max.y && b.max.y > a.min.y;
-				return overlapX && overlapY;
-
+				return false;
 			}
+			bool overlapX = TwoRangesIntersectionSpan(a.min.x, a.max.x, b.min.x, b.max.x) > allowedNumericalError;
+			bool overlapY = TwoRangesIntersectionSpan(a.min.y, a.max.y, b.min.y, b.max.y) > allowedNumericalError;
+			return overlapX && overlapY;
+		}
+
+		private static float TwoRangesIntersectionSpan(float aMin, float aMax, float bMin, float bMax)
+		{
+			float containerMinimum = Mathf.Min(aMin, bMin);
+			float containerMaximum = Mathf.Max(aMax, bMax);
+			float containerLength = containerMaximum - containerMinimum;
+			float aLength = aMax - aMin;
+			float bLength = bMax - bMin;
+			return aLength + bLength - containerLength;
 		}
 
 		bool CanPlaceActiveChips()
