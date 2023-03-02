@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using System.Collections.ObjectModel;
 using DLS.ChipData;
 using System.Linq;
@@ -152,7 +151,7 @@ namespace DLS.ChipCreation
 			if (chipEditor.WorkArea.GridSnap())
 			{
 				Bounds bounds = chipEditor.WorkArea.ColliderBounds;
-				posY = MouseHelper.GetDiscretizedFloat(posY, chipEditor.WorkArea.GridDiscretization, bounds.min.y, bounds.max.y);
+				posY = MathsHelper.GetDiscretizedFloat(posY, chipEditor.WorkArea.GridDiscretization, bounds.min.y, bounds.max.y);
 			}
 			return new Vector3(posX, posY, RenderOrder.EditablePin);
 		}

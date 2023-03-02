@@ -64,7 +64,7 @@ namespace DLS.ChipCreation
 				{
 					if (workArea.GridSnap()) {
 						Bounds bounds = workArea.ColliderBounds;
-						posY = MouseHelper.GetDiscretizedFloat(posY, workArea.GridDiscretization, bounds.min.y, bounds.max.y);
+						posY = MathsHelper.GetDiscretizedFloat(posY, workArea.GridDiscretization, bounds.min.y, bounds.max.y);
 					}
 					editablePin.transform.position = new Vector3(dragStartPos.x, posY, RenderOrder.EditablePinPreview);
 					HandleMoved?.Invoke(editablePin);

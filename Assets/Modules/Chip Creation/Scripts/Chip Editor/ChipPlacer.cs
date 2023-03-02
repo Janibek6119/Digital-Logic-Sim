@@ -103,33 +103,12 @@ namespace DLS.ChipCreation
 			Bounds bounds = chip.GetBounds();
 			foreach (ChipBase otherChip in chipEditor.AllSubChips)
 			{
-				if (otherChip != chip && BoundsOverlap2DAllowNumericalError(otherChip.GetBounds(), bounds))
+				if (otherChip != chip && MathsHelper.BoundsOverlap2DAllowNumericalError(otherChip.GetBounds(), bounds))
 				{
 					return false;
 				}
 			}
 			return !chipEditor.WorkArea.OutOfBounds(bounds);
-		}
-
-		private static bool BoundsOverlap2DAllowNumericalError(Bounds a, Bounds b, float allowedNumericalError = 0.001f)
-		{
-			if (a.size.x * a.size.y == 0 || b.size.x * b.size.y == 0)
-			{
-				return false;
-			}
-			bool overlapX = TwoRangesIntersectionSpan(a.min.x, a.max.x, b.min.x, b.max.x) > allowedNumericalError;
-			bool overlapY = TwoRangesIntersectionSpan(a.min.y, a.max.y, b.min.y, b.max.y) > allowedNumericalError;
-			return overlapX && overlapY;
-		}
-
-		private static float TwoRangesIntersectionSpan(float aMin, float aMax, float bMin, float bMax)
-		{
-			float containerMinimum = Mathf.Min(aMin, bMin);
-			float containerMaximum = Mathf.Max(aMax, bMax);
-			float containerLength = containerMaximum - containerMinimum;
-			float aLength = aMax - aMin;
-			float bLength = bMax - bMin;
-			return aLength + bLength - containerLength;
 		}
 
 		bool CanPlaceActiveChips()
@@ -346,14 +325,13 @@ namespace DLS.ChipCreation
 
 			if (chipEditor.WorkArea.GridSnap())
 			{
-				chipSpacing = MouseHelper.GetDiscretizedFloat(chipSpacing, chipEditor.WorkArea.GridDiscretization, chipSpacing, null);
+				// Since chip spacing is discretized too, we can rely on offset of first chip's top left corner (not the top chip's)
+				chipSpacing = MathsHelper.GetDiscretizedFloat(chipSpacing, chipEditor.WorkArea.GridDiscretization, chipSpacing);
 				Vector2 chipExtents = activeChips[0].GetBounds().extents;
 				float leftOffset = -chipExtents.x;
 				float topOffset = -CalculateSpacing(0, activeChips.Count, boundsSize, chipSpacing) + chipExtents.y;
 				Vector2 topLeftOffset = new Vector2(leftOffset, topOffset);
-				Vector2 targetTopLeftCorner = centre + topLeftOffset;
-				targetTopLeftCorner = MouseHelper.GetDiscretizedVector(targetTopLeftCorner, null, chipEditor.WorkArea.GridDiscretization);
-				targetCentrePos = targetTopLeftCorner - topLeftOffset;
+				targetCentrePos = MathsHelper.GetDiscretizedVector(targetCentrePos, chipEditor.WorkArea.GridDiscretization, topLeftOffset);
 			}
 
 			for (int i = 0; i < activeChips.Count; i++)

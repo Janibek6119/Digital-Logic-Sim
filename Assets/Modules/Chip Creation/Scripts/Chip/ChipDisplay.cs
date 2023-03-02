@@ -64,7 +64,7 @@ namespace DLS.ChipCreation
 			Vector2 displaySize = showChipName ? nameDisplay.GetPreferredValues() : body.transform.localScale;
 			float chipSizeX = displaySize.x + (showChipName ? paddingX : 0);
 			// Width of chip body can be discretized (upwards) with no complications
-			chipSizeX = MouseHelper.GetDiscretizedFloat(chipSizeX, DISCR, chipSizeX, null) - outlineWidth;
+			chipSizeX = MathsHelper.GetDiscretizedFloat(chipSizeX, DISCR, chipSizeX) - outlineWidth;
 
 			// But height is complicated by inner content (text) and pins
 			// - pin spacing might be increased to fit pins onto the grid
@@ -74,7 +74,7 @@ namespace DLS.ChipCreation
 			// Predict raw distance between pins
 			float predictedPinDistance = DisplaySettings.PinSize + pinSpacingFactor;
 			// Discretize it (upwards)
-			float discretizedPinDistance = MouseHelper.GetDiscretizedFloat(predictedPinDistance, DISCR, predictedPinDistance, null);
+			float discretizedPinDistance = MathsHelper.GetDiscretizedFloat(predictedPinDistance, DISCR, predictedPinDistance);
 			float maxPinsOnOneSide = Mathf.Max(chipDescription.InputPins.Length, chipDescription.OutputPins.Length);
 			float pinSpawnLength = Mathf.Max(0, maxPinsOnOneSide - 1) * discretizedPinDistance + DisplaySettings.PinSize;
 

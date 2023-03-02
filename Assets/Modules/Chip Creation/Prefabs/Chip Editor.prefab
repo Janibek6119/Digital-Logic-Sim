@@ -245,11 +245,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7065f7b13feb6fc49a408819c71d90d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HLine: {fileID: 9161062477817811252, guid: f401c3c849bc1ce45afd55476e46575b, type: 3}
-  VLine: {fileID: 7523341667497137670, guid: c678a3f0472c24c4b9eb46c563b73b40, type: 3}
+  linePrefab: {fileID: 9161062477817811252, guid: f401c3c849bc1ce45afd55476e46575b, type: 3}
   container: {fileID: 920701536622795045}
   thickness: 0.0005
-  preferDotGrid: 1
+  preferDotGrid: 0
 --- !u!1 &2388310689267564222
 GameObject:
   m_ObjectHideFlags: 0
