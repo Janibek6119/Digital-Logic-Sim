@@ -21,12 +21,12 @@ namespace DLS.ChipCreation
 		Pin pinA;
 		Pin pinB;
 
-		public override void Load(ChipDescription description, ChipInstanceData instanceData)
+		public override void Load(ChipDescription description, ChipInstanceData instanceData, WorkArea workArea)
 		{
 			//base.Load(description, instanceData);
 			transform.position = ToVector(instanceData.Points[0]);
 			Vector3[] points = instanceData.Points.Select(p => ToVector(p).WithZ(RenderOrder.ChipMoving)).Reverse().ToArray();
-			StartPlacing(description, instanceData.ID);
+			StartPlacing(description, instanceData.ID, workArea);
 			pinA.transform.position = points[0];
 			PlacePin();
 			for (int i = 1; i < points.Length - 1; i++)
@@ -38,9 +38,9 @@ namespace DLS.ChipCreation
 			FinishPlacing();
 		}
 
-		public override void StartPlacing(ChipDescription description, int id)
+		public override void StartPlacing(ChipDescription description, int id, WorkArea workArea)
 		{
-			base.StartPlacing(description, id);
+			base.StartPlacing(description, id, workArea);
 			pinA = CreatePin(transform.position, true);
 			CurrentPlacementState = PlacementState.PlacingFirstPin;
 			highlight.transform.localScale = (Vector2.one * DisplaySettings.PinSize).WithZ(1);

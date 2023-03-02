@@ -46,7 +46,7 @@ namespace DLS.ChipCreation
 		public void Load(ChipDescription description, ChipInstanceData instanceData)
 		{
 			ChipBase loadedChip = InstantiateChip(description);
-			loadedChip.Load(description, instanceData);
+			loadedChip.Load(description, instanceData, chipEditor.WorkArea);
 			OnStartedPlacingOrLoadingChip(loadedChip, isLoading: true);
 			OnFinishedPlacingOrLoadingChip(loadedChip, wasLoaded: true);
 		}
@@ -278,7 +278,7 @@ namespace DLS.ChipCreation
 			ChipBase newChip = InstantiateChip(chipDescription);
 			activeChips.Add(newChip);
 			newChip.ChipDeleted += OnChipDeletedBeforePlacement;
-			newChip.StartPlacing(chipDescription, id);
+			newChip.StartPlacing(chipDescription, id, chipEditor.WorkArea);
 			lastCreatedChipDescription = chipDescription;
 
 			OnStartedPlacingOrLoadingChip(newChip, isLoading: false);
@@ -332,16 +332,32 @@ namespace DLS.ChipCreation
 		{
 			float boundsSize = activeChips[0].GetBounds().size.y;
 
+			float chipSpacing = multiChipSpacing;
+			Vector2 targetCentrePos = centre;
+
+			bool gridSnap = Keyboard.current.ctrlKey.isPressed;
+			if (gridSnap)
+			{
+				chipSpacing = MouseHelper.GetDiscretizedFloat(chipSpacing, chipEditor.WorkArea.GridDiscretization, chipSpacing, null);
+				Vector2 chipExtents = activeChips[0].GetBounds().extents;
+				float leftOffset = -chipExtents.x;
+				float topOffset = -CalculateSpacing(0, activeChips.Count, boundsSize, chipSpacing) + chipExtents.y;
+				Vector2 topLeftOffset = new Vector2(leftOffset, topOffset);
+				Vector2 targetTopLeftCorner = centre + topLeftOffset;
+				targetTopLeftCorner = MouseHelper.GetDiscretizedVector(targetTopLeftCorner, null, chipEditor.WorkArea.GridDiscretization);
+				targetCentrePos = targetTopLeftCorner - topLeftOffset;
+			}
+
 			for (int i = 0; i < activeChips.Count; i++)
 			{
-				Vector3 pos = centre.WithZ(RenderOrder.ChipMoving) + Vector3.down * CalculateSpacing(i, activeChips.Count, boundsSize);
+				Vector3 pos = targetCentrePos.WithZ(RenderOrder.ChipMoving) + Vector3.down * CalculateSpacing(i, activeChips.Count, boundsSize, chipSpacing);
 				activeChips[i].transform.position = pos;
 			}
 		}
 
-		float CalculateSpacing(int i, int count, float boundsSize)
+		static float CalculateSpacing(int i, int count, float boundsSize, float spacing)
 		{
-			return (boundsSize + multiChipSpacing) * (i - (count - 1) / 2f);
+			return (boundsSize + spacing) * (i - (count - 1) / 2f);
 		}
 
 		int GenerateID()

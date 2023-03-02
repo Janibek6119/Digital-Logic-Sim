@@ -73,7 +73,7 @@ namespace DLS.ChipCreation
 			return snappedMousePos;
 		}
 
-		private static Vector2 GetDiscretizedVector(Vector2 pos, Bounds? absBounds, float discretization)
+		public static Vector2 GetDiscretizedVector(Vector2 pos, Bounds? absBounds, float discretization)
 		{
 			float discretizedX = GetDiscretizedFloat(pos.x, discretization, absBounds?.min.x, absBounds?.max.x);
 			float discretizedY = GetDiscretizedFloat(pos.y, discretization, absBounds?.min.y, absBounds?.max.y);

@@ -48,10 +48,29 @@ namespace DLS.ChipCreation
 
 				if (isMovingChips)
 				{
-					for (int i = 0; i < chipsToMove.Length; i++)
+					// If moving one chip, snap by its top left corner
+					// If moving many, just discretize the mouseDelta
+					bool gridSnap = Keyboard.current.ctrlKey.isPressed;
+					if (chipsToMove.Length == 1)
 					{
-						Vector2 targetPos = chipStartPositions[i] + mouseDelta;
-						chipsToMove[i].transform.position = new Vector3(targetPos.x, targetPos.y, RenderOrder.ChipMoving);
+						Vector2 targetPos = chipStartPositions[0] + mouseDelta;
+						if (gridSnap)
+						{
+							Vector2 topLeftCornerOffset = (Vector2)chipsToMove[0].GetBounds().extents * new Vector2(-1, 1);
+							Vector2 targetTopLeftPos = targetPos + topLeftCornerOffset;
+							targetTopLeftPos = MouseHelper.GetDiscretizedVector(targetTopLeftPos, null, chipEditor.WorkArea.GridDiscretization);
+							targetPos = targetTopLeftPos - topLeftCornerOffset;
+						}
+						chipsToMove[0].transform.position = new Vector3(targetPos.x, targetPos.y, RenderOrder.ChipMoving);
+					}
+					else
+					{
+						Vector2 adjustedMouseDelta = gridSnap ? MouseHelper.GetDiscretizedVector(mouseDelta, null, chipEditor.WorkArea.GridDiscretization) : mouseDelta;
+						for (int i = 0; i < chipsToMove.Length; i++)
+						{
+							Vector2 targetPos = chipStartPositions[i] + adjustedMouseDelta;
+							chipsToMove[i].transform.position = new Vector3(targetPos.x, targetPos.y, RenderOrder.ChipMoving);
+						}
 					}
 					OnChipsMoved(chipsToMove);
 				}
