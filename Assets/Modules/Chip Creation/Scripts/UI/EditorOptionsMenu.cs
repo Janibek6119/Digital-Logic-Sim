@@ -11,6 +11,7 @@ namespace DLS.ChipCreation.UI
 		[SerializeField] ValueWheel mainPinDisplayOptions;
 		[SerializeField] ValueWheel subPinDisplayOptions;
 		[SerializeField] ValueWheel cursorGuideDisplayOptions;
+		[SerializeField] ValueWheel gridDisplayOptions;
 		[SerializeField] CustomButton doneButton;
 
 		void Awake()
@@ -18,6 +19,7 @@ namespace DLS.ChipCreation.UI
 			mainPinDisplayOptions.onValueChanged += (v) => UpdatePinDisplayOptions();
 			subPinDisplayOptions.onValueChanged += (v) => UpdatePinDisplayOptions();
 			cursorGuideDisplayOptions.onValueChanged += (v) => UpdatePinDisplayOptions();
+			gridDisplayOptions.onValueChanged += (v) => UpdatePinDisplayOptions();
 			doneButton.ButtonClicked += Close;
 		}
 
@@ -27,6 +29,7 @@ namespace DLS.ChipCreation.UI
 			mainPinDisplayOptions.SetActiveIndex((int)options.MainChipPinNameDisplayMode, false);
 			subPinDisplayOptions.SetActiveIndex((int)options.SubChipPinNameDisplayMode, false);
 			cursorGuideDisplayOptions.SetActiveIndex((int)options.ShowCursorGuide, false);
+			gridDisplayOptions.SetActiveIndex((int)options.GridDisplayMode, false);
 		}
 
 		void UpdatePinDisplayOptions()
@@ -36,7 +39,8 @@ namespace DLS.ChipCreation.UI
 			{
 				MainChipPinNameDisplayMode = (DisplayOptions.PinNameDisplayMode)mainPinDisplayOptions.activeValueIndex,
 				SubChipPinNameDisplayMode = (DisplayOptions.PinNameDisplayMode)subPinDisplayOptions.activeValueIndex,
-				ShowCursorGuide = (DisplayOptions.ToggleState)cursorGuideDisplayOptions.activeValueIndex
+				ShowCursorGuide = (DisplayOptions.ToggleState)cursorGuideDisplayOptions.activeValueIndex,
+				GridDisplayMode = (DisplayOptions.BackgroundGridDisplayMode)gridDisplayOptions.activeValueIndex
 			};
 			chipCreationManager.UpdateDisplayOptions(options);
 		}

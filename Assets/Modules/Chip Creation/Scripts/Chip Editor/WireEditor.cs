@@ -487,7 +487,7 @@ namespace DLS.ChipCreation
 		Vector2 CalculateSnappedMousePosition()
 		{
 			bool snap = Keyboard.current.leftShiftKey.isPressed;
-			bool gridSnap = Keyboard.current.ctrlKey.isPressed;
+			bool gridSnap = chipEditor.WorkArea.GridSnap();
 			float gridDiscretization = chipEditor.WorkArea.GridDiscretization;
 			Bounds bounds = chipEditor.WorkArea.ColliderBounds;
 			return MouseHelper.CalculateAxisSnappedMousePosition(wireUnderConstruction.AnchorPoints[^1], snap, gridSnap, gridDiscretization, bounds);

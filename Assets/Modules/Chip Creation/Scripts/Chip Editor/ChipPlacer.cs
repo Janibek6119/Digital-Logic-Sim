@@ -147,7 +147,7 @@ namespace DLS.ChipCreation
 			bool snapping = shiftKeyDown && busPlacementPoints != null && busPlacementPoints.Count > 0;
 			Vector2 snapOrigin = snapping ? busPlacementPoints[^1] : Vector2.zero;
 
-			bool gridSnap = Keyboard.current.ctrlKey.isPressed;
+			bool gridSnap = chipEditor.WorkArea.GridSnap();
 			float gridDiscretization = chipEditor.WorkArea.GridDiscretization;
 			Bounds bounds = chipEditor.WorkArea.ColliderBounds;
 			Vector2 mousePos = MouseHelper.CalculateAxisSnappedMousePosition(snapOrigin, snapping, gridSnap, gridDiscretization, bounds);
@@ -335,8 +335,7 @@ namespace DLS.ChipCreation
 			float chipSpacing = multiChipSpacing;
 			Vector2 targetCentrePos = centre;
 
-			bool gridSnap = Keyboard.current.ctrlKey.isPressed;
-			if (gridSnap)
+			if (chipEditor.WorkArea.GridSnap())
 			{
 				chipSpacing = MouseHelper.GetDiscretizedFloat(chipSpacing, chipEditor.WorkArea.GridDiscretization, chipSpacing, null);
 				Vector2 chipExtents = activeChips[0].GetBounds().extents;

@@ -319,6 +319,7 @@ namespace DLS.ChipCreation
 			ProjectSettings.UpdateDisplayOptions(options);
 			ActiveViewChipEditor.UpdatePinDisplaySettings();
 			cursorGuide.SetActive(options.ShowCursorGuide == DisplayOptions.ToggleState.On);
+			ActiveViewChipEditor.WorkArea.BackgroundGridRenderer.SetGridDisplayMode(options.GridDisplayMode);
 		}
 
 		public static void QuitToMainMenu()

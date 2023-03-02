@@ -14,16 +14,25 @@ public class BackgroundGridRenderer : MonoBehaviour
 
 	[SerializeField, Range(0, 0.005f)] float thickness;
 	[SerializeField] bool preferDotGrid;
+	DisplayOptions.BackgroundGridDisplayMode mode;
+	bool gridShow;
 
-	void Start()
+	public void SetUp(WorkArea workArea, DisplayOptions.BackgroundGridDisplayMode gridDisplayMode)
 	{
-		workArea = GetComponent<WorkArea>();
+		this.workArea = workArea;
 		SpawnGrid();
-		container.SetActive(false);
+		SetGridDisplayMode(gridDisplayMode);
 		workArea.WorkAreaResized += SpawnGrid;
 	}
 
-	void SpawnGrid() {
+	public void SetGridDisplayMode(DisplayOptions.BackgroundGridDisplayMode gridDisplayMode)
+	{
+		mode = gridDisplayMode;
+		SetGridVisibility(gridDisplayMode == DisplayOptions.BackgroundGridDisplayMode.Always);
+	}
+
+	void SpawnGrid()
+	{
 		if (preferDotGrid)
 		{
 			InstantiateDotGrid();
@@ -34,16 +43,24 @@ public class BackgroundGridRenderer : MonoBehaviour
 		}
 	}
 
+	void SetGridVisibility(bool visible)
+	{
+		gridShow = visible;
+		container.SetActive(gridShow);
+	}
+
 	void Update()
 	{
-		Keyboard keyboard = Keyboard.current;
-		if (keyboard.ctrlKey.wasPressedThisFrame)
+		if (mode == DisplayOptions.BackgroundGridDisplayMode.Sync)
 		{
-			container.SetActive(true);
+			SetGridVisibility(workArea.GridSnap());
 		}
-		else if (keyboard.ctrlKey.wasReleasedThisFrame)
+		else if (mode == DisplayOptions.BackgroundGridDisplayMode.Toggle)
 		{
-			container.SetActive(false);
+			if (Keyboard.current.gKey.wasPressedThisFrame)
+			{
+				SetGridVisibility(!gridShow);
+			}
 		}
 	}
 

@@ -120,7 +120,8 @@ namespace DLS.ChipCreation
 			{
 				MainChipPinNameDisplayMode = DisplayOptions.PinNameDisplayMode.Hover,
 				SubChipPinNameDisplayMode = DisplayOptions.PinNameDisplayMode.Hover,
-				ShowCursorGuide = DisplayOptions.ToggleState.Off
+				ShowCursorGuide = DisplayOptions.ToggleState.Off,
+				GridDisplayMode = DisplayOptions.BackgroundGridDisplayMode.Never
 			};
 			settings.CreationTime = System.DateTime.Now;
 			settings.UpdateDisplayOptions(displayOptions, autosave: false);

@@ -50,7 +50,7 @@ namespace DLS.ChipCreation
 				{
 					// If moving one chip, snap by its top left corner
 					// If moving many, just discretize the mouseDelta
-					bool gridSnap = Keyboard.current.ctrlKey.isPressed;
+					bool gridSnap = chipEditor.WorkArea.GridSnap();
 					if (chipsToMove.Length == 1)
 					{
 						Vector2 targetPos = chipStartPositions[0] + mouseDelta;

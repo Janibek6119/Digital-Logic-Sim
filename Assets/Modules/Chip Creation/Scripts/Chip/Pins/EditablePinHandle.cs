@@ -62,8 +62,7 @@ namespace DLS.ChipCreation
 				float posY = dragStartPos.y + (mouseY - dragStartMousePos.y);
 				if (Mathf.Abs(posY - editablePin.transform.position.y) > 0.0001f)
 				{
-					bool gridSnap = Keyboard.current.ctrlKey.isPressed;
-					if (gridSnap) {
+					if (workArea.GridSnap()) {
 						Bounds bounds = workArea.ColliderBounds;
 						posY = MouseHelper.GetDiscretizedFloat(posY, workArea.GridDiscretization, bounds.min.y, bounds.max.y);
 					}
