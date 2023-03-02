@@ -29,15 +29,15 @@ namespace DLS.ChipCreation
 
 		Color outlineCol;
 
-		public override void Load(ChipDescription description, ChipInstanceData instanceData)
+		public override void Load(ChipDescription description, ChipInstanceData instanceData, WorkArea workArea)
 		{
-			base.Load(description, instanceData);
+			base.Load(description, instanceData, workArea);
 			Create(description, new Vector2(instanceData.Points[0].X, instanceData.Points[0].Y));
 		}
 
-		public override void StartPlacing(ChipDescription chipDescription, int id)
+		public override void StartPlacing(ChipDescription chipDescription, int id, WorkArea workArea)
 		{
-			base.StartPlacing(chipDescription, id);
+			base.StartPlacing(chipDescription, id, workArea);
 			Create(chipDescription, Vector2.zero);
 		}
 
@@ -60,11 +60,45 @@ namespace DLS.ChipCreation
 			nameDisplay.color = ColourHelper.TextBlackOrWhite(chipColour);
 
 			// Calculate chip size
+			float DISCR = workArea.GridDiscretization;
 			Vector2 displaySize = showChipName ? nameDisplay.GetPreferredValues() : body.transform.localScale;
 			float chipSizeX = displaySize.x + (showChipName ? paddingX : 0);
+			// Width of chip body can be discretized (upwards) with no complications
+			chipSizeX = MathsHelper.GetDiscretizedFloat(chipSizeX, DISCR, chipSizeX) - outlineWidth;
+
+			// But height is complicated by inner content (text) and pins
+			// - pin spacing might be increased to fit pins onto the grid
+			// - paddingY might be increased to fit chip's top&bottom onto the grid
+			// Thus, paddingY and pinSpacingFactor are not scrict but instead act as minimal values
+
+			// Predict raw distance between pins
+			float predictedPinDistance = DisplaySettings.PinSize + pinSpacingFactor;
+			// Discretize it (upwards)
+			float discretizedPinDistance = MathsHelper.GetDiscretizedFloat(predictedPinDistance, DISCR, predictedPinDistance);
 			float maxPinsOnOneSide = Mathf.Max(chipDescription.InputPins.Length, chipDescription.OutputPins.Length);
-			float pinSpawnLength = maxPinsOnOneSide * DisplaySettings.PinSize + Mathf.Max(0, maxPinsOnOneSide - 1) * pinSpacingFactor;
-			float chipSizeY = Mathf.Max(pinSpawnLength, displaySize.y) + paddingY;
+			float pinSpawnLength = Mathf.Max(0, maxPinsOnOneSide - 1) * discretizedPinDistance + DisplaySettings.PinSize;
+
+			float predictedBoxHeight = Mathf.Max(pinSpawnLength, displaySize.y) + paddingY;
+			// (Didn't add outlineWidth intentionally)
+			// NOTE: wrong paddingY param could place all pins in BETWEEN dots
+			// So check the box height and, if needed, increase by one step of grid
+			// RULE: IF pin count is even AND pin distance is odd THEN box height must be odd ELSE even
+			float predictedBoxHeightInDots = Mathf.CeilToInt(predictedBoxHeight / DISCR);
+			if (maxPinsOnOneSide % 2 == 0)
+			{
+				float pinDistanceInDots = Mathf.RoundToInt(discretizedPinDistance / DISCR);
+				if (pinDistanceInDots % 2 == 1 && predictedBoxHeightInDots % 2 == 0)
+				{
+					predictedBoxHeightInDots++;
+				}
+			}
+			else if (predictedBoxHeightInDots % 2 == 1)
+			{
+				predictedBoxHeightInDots++;
+			}
+			// After this, paddingY can only ruin the look if chips, not the grid snapping
+
+			float chipSizeY = predictedBoxHeightInDots * DISCR - outlineWidth;
 
 			// Set size
 			Size = new Vector2(chipSizeX, chipSizeY);
@@ -73,8 +107,8 @@ namespace DLS.ChipCreation
 			interactionBounds.size = Size + Vector2.one * outlineWidth;
 
 			// Instantiate pins
-			float pinStartY = (chipSizeY - paddingY - DisplaySettings.PinSize) / 2;
-			float pinEndY = (-chipSizeY + paddingY + DisplaySettings.PinSize) / 2;
+			float pinStartY = (pinSpawnLength - DisplaySettings.PinSize) / 2;
+			float pinEndY = -pinStartY;
 			Pin[] inputPins = InstantiatePins(chipDescription.InputPins, -chipSizeX / 2, pinStartY, pinEndY, PinType.SubChipInputPin);
 			Pin[] outputPins = InstantiatePins(chipDescription.OutputPins, chipSizeX / 2, pinStartY, pinEndY, PinType.SubChipOutputPin);
 			SetPins(inputPins, outputPins);

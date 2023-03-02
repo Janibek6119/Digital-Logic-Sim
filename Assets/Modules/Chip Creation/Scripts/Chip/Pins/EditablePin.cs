@@ -22,7 +22,7 @@ namespace DLS.ChipCreation
 
 		bool isInputPin;
 
-		public void SetUp(bool isInputPin, string name, Palette.VoltageColour theme, int id)
+		public void SetUp(bool isInputPin, string name, Palette.VoltageColour theme, int id, WorkArea workArea)
 		{
 			this.isInputPin = isInputPin;
 
@@ -46,7 +46,7 @@ namespace DLS.ChipCreation
 
 
 			pin.State = PinState.LOW;
-			handle.SetUp();
+			handle.SetUp(workArea);
 		}
 
 		void TogglePinState()

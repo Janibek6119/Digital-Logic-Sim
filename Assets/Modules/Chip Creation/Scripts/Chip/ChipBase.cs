@@ -21,19 +21,20 @@ namespace DLS.ChipCreation
 		public ReadOnlyCollection<Pin> AllPins { get; private set; }
 		public Vector2 Size { get; protected set; }
 		public int ID { get; private set; }
+		protected WorkArea workArea;
 
 		Dictionary<int, Pin> pinsByID;
 
 		// Load chip from save file
-		public virtual void Load(ChipDescription description, ChipInstanceData instanceData)
+		public virtual void Load(ChipDescription description, ChipInstanceData instanceData, WorkArea workArea)
 		{
-			Init(description, instanceData.ID);
+			Init(description, instanceData.ID, workArea);
 		}
 
 		// Start placing chip from the editor
-		public virtual void StartPlacing(ChipDescription description, int id)
+		public virtual void StartPlacing(ChipDescription description, int id, WorkArea workArea)
 		{
-			Init(description, id);
+			Init(description, id, workArea);
 		}
 
 		// Finished placing a chip in the editor
@@ -101,11 +102,12 @@ namespace DLS.ChipCreation
 			return new Vector2(p.X, p.Y);
 		}
 
-		void Init(ChipDescription description, int id)
+		void Init(ChipDescription description, int id, WorkArea workArea)
 		{
 			Description = description;
 			ID = id;
 			pinsByID = new Dictionary<int, Pin>();
+			this.workArea = workArea;
 		}
 
 	}

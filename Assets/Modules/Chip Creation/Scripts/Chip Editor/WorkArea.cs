@@ -1,5 +1,6 @@
 using UnityEngine;
 using SebInput;
+using UnityEngine.InputSystem;
 
 namespace DLS.ChipCreation
 {
@@ -14,6 +15,8 @@ namespace DLS.ChipCreation
 
 		public float Width { get; private set; }
 		public float Height { get; private set; }
+		public float GridDiscretization { get => gridDiscretization; }
+		public Bounds ColliderBounds { get => backgroundCollider.bounds; }
 
 		[SerializeField] MeshRenderer background;
 		[SerializeField] BoxCollider2D backgroundCollider;
@@ -26,6 +29,9 @@ namespace DLS.ChipCreation
 		[SerializeField, Range(0, 1)] float thicknessT;
 		[SerializeField] float offsetY;
 		[SerializeField] float ioBarPadding;
+		[SerializeField] float gridDiscretization;
+		[SerializeField] BackgroundGridRenderer backgroundGridRenderer;
+		public BackgroundGridRenderer BackgroundGridRenderer { get => backgroundGridRenderer; }
 
 		[SerializeField] Color outlineCol;
 		[SerializeField] Color backgroundCol;
@@ -34,15 +40,20 @@ namespace DLS.ChipCreation
 		bool needsUpdate;
 
 
-		public void SetUp()
+		public void SetUp(DisplayOptions.BackgroundGridDisplayMode gridDisplayMode)
 		{
 			WorkAreaMouseInteraction = new MouseInteraction<WorkArea>(background.gameObject, this);
 			InputBarMouseInteraction = new MouseInteraction<bool>(inputBar.gameObject, true);
 			OutputBarMouseInteraction = new MouseInteraction<bool>(outputBar.gameObject, false);
 			needsUpdate = true;
 			SetWidthAndHeight();
+			backgroundGridRenderer.SetUp(this, gridDisplayMode);
 		}
 
+		public bool GridSnap()
+		{
+			return Keyboard.current.ctrlKey.isPressed;
+		}
 
 		void Update()
 		{

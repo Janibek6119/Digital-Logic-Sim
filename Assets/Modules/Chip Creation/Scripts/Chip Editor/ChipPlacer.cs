@@ -46,7 +46,7 @@ namespace DLS.ChipCreation
 		public void Load(ChipDescription description, ChipInstanceData instanceData)
 		{
 			ChipBase loadedChip = InstantiateChip(description);
-			loadedChip.Load(description, instanceData);
+			loadedChip.Load(description, instanceData, chipEditor.WorkArea);
 			OnStartedPlacingOrLoadingChip(loadedChip, isLoading: true);
 			OnFinishedPlacingOrLoadingChip(loadedChip, wasLoaded: true);
 		}
@@ -103,24 +103,12 @@ namespace DLS.ChipCreation
 			Bounds bounds = chip.GetBounds();
 			foreach (ChipBase otherChip in chipEditor.AllSubChips)
 			{
-				if (otherChip != chip && BoundsOverlap2D(otherChip.GetBounds(), bounds))
+				if (otherChip != chip && MathsHelper.BoundsOverlap2DAllowNumericalError(otherChip.GetBounds(), bounds))
 				{
 					return false;
 				}
 			}
 			return !chipEditor.WorkArea.OutOfBounds(bounds);
-
-			bool BoundsOverlap2D(Bounds a, Bounds b)
-			{
-				if (a.size.x * a.size.y == 0 || b.size.x * b.size.y == 0)
-				{
-					return false;
-				}
-				bool overlapX = b.min.x < a.max.x && b.max.x > a.min.x;
-				bool overlapY = b.min.y < a.max.y && b.max.y > a.min.y;
-				return overlapX && overlapY;
-
-			}
 		}
 
 		bool CanPlaceActiveChips()
@@ -147,7 +135,10 @@ namespace DLS.ChipCreation
 			bool snapping = shiftKeyDown && busPlacementPoints != null && busPlacementPoints.Count > 0;
 			Vector2 snapOrigin = snapping ? busPlacementPoints[^1] : Vector2.zero;
 
-			Vector2 mousePos = MouseHelper.CalculateAxisSnappedMousePosition(snapOrigin, snapping);
+			bool gridSnap = chipEditor.WorkArea.GridSnap();
+			float gridDiscretization = chipEditor.WorkArea.GridDiscretization;
+			Bounds bounds = chipEditor.WorkArea.ColliderBounds;
+			Vector2 mousePos = MouseHelper.CalculateAxisSnappedMousePosition(snapOrigin, snapping, gridSnap, gridDiscretization, bounds);
 
 			// Update position while placing first pin
 			if (placementState == BusDisplay.PlacementState.PlacingFirstPin)
@@ -275,7 +266,7 @@ namespace DLS.ChipCreation
 			ChipBase newChip = InstantiateChip(chipDescription);
 			activeChips.Add(newChip);
 			newChip.ChipDeleted += OnChipDeletedBeforePlacement;
-			newChip.StartPlacing(chipDescription, id);
+			newChip.StartPlacing(chipDescription, id, chipEditor.WorkArea);
 			lastCreatedChipDescription = chipDescription;
 
 			OnStartedPlacingOrLoadingChip(newChip, isLoading: false);
@@ -329,16 +320,30 @@ namespace DLS.ChipCreation
 		{
 			float boundsSize = activeChips[0].GetBounds().size.y;
 
+			float chipSpacing = multiChipSpacing;
+			Vector2 targetCentrePos = centre;
+
+			if (chipEditor.WorkArea.GridSnap())
+			{
+				// Since chip spacing is discretized too, we can rely on offset of first chip's top left corner (not the top chip's)
+				chipSpacing = MathsHelper.GetDiscretizedFloat(chipSpacing, chipEditor.WorkArea.GridDiscretization, chipSpacing);
+				Vector2 chipExtents = activeChips[0].GetBounds().extents;
+				float leftOffset = -chipExtents.x;
+				float topOffset = -CalculateSpacing(0, activeChips.Count, boundsSize, chipSpacing) + chipExtents.y;
+				Vector2 topLeftOffset = new Vector2(leftOffset, topOffset);
+				targetCentrePos = MathsHelper.GetDiscretizedVector(targetCentrePos, chipEditor.WorkArea.GridDiscretization, topLeftOffset);
+			}
+
 			for (int i = 0; i < activeChips.Count; i++)
 			{
-				Vector3 pos = centre.WithZ(RenderOrder.ChipMoving) + Vector3.down * CalculateSpacing(i, activeChips.Count, boundsSize);
+				Vector3 pos = targetCentrePos.WithZ(RenderOrder.ChipMoving) + Vector3.down * CalculateSpacing(i, activeChips.Count, boundsSize, chipSpacing);
 				activeChips[i].transform.position = pos;
 			}
 		}
 
-		float CalculateSpacing(int i, int count, float boundsSize)
+		static float CalculateSpacing(int i, int count, float boundsSize, float spacing)
 		{
-			return (boundsSize + multiChipSpacing) * (i - (count - 1) / 2f);
+			return (boundsSize + spacing) * (i - (count - 1) / 2f);
 		}
 
 		int GenerateID()

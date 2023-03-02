@@ -77,7 +77,7 @@ namespace DLS.ChipCreation
 			PinPlacer.PinCreated += OnInputOrOutputPinCreated;
 			PinPlacer.PinDeleted += OnMainPinDeleted;
 
-			workArea.SetUp();
+			workArea.SetUp(settings.DisplayOptions.GridDisplayMode);
 
 			// Set up all controllers
 			foreach (var controller in controllers)

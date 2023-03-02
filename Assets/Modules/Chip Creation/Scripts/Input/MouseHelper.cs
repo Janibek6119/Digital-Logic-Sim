@@ -63,6 +63,16 @@ namespace DLS.ChipCreation
 
 		}
 
+		public static Vector2 CalculateAxisSnappedMousePosition(Vector2 origin, bool snap, bool gridSnap, float gridDiscretization, Bounds? absBounds = null)
+		{
+			Vector2 snappedMousePos = CalculateAxisSnappedMousePosition(origin, snap);
+			if (gridSnap)
+			{
+				snappedMousePos = MathsHelper.GetDiscretizedVector(snappedMousePos, gridDiscretization, absBounds);
+			}
+			return snappedMousePos;
+		}
+
 		static Camera Cam
 		{
 			get

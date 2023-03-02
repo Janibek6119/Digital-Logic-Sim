@@ -48,12 +48,7 @@ namespace DLS.ChipCreation
 
 				if (isMovingChips)
 				{
-					for (int i = 0; i < chipsToMove.Length; i++)
-					{
-						Vector2 targetPos = chipStartPositions[i] + mouseDelta;
-						chipsToMove[i].transform.position = new Vector3(targetPos.x, targetPos.y, RenderOrder.ChipMoving);
-					}
-					OnChipsMoved(chipsToMove);
+					MoveChips(mouseDelta);
 				}
 			}
 
@@ -79,6 +74,36 @@ namespace DLS.ChipCreation
 			{
 				CancelMove();
 			}
+		}
+
+		private void MoveChips(Vector2 mouseDelta)
+		{
+			if (chipsToMove.Length == 1)
+			{
+				// If moving one chip, snap by its top left corner
+				Vector2 targetPos = chipStartPositions[0] + mouseDelta;
+				if (chipEditor.WorkArea.GridSnap())
+				{
+					Vector2 topLeftCornerOffset = (Vector2)chipsToMove[0].GetBounds().extents * new Vector2(-1, 1);
+					targetPos = MathsHelper.GetDiscretizedVector(targetPos, chipEditor.WorkArea.GridDiscretization, topLeftCornerOffset);
+				}
+				chipsToMove[0].transform.position = new Vector3(targetPos.x, targetPos.y, RenderOrder.ChipMoving);
+			}
+			else
+			{
+				// If moving many, just discretize the mouseDelta
+				Vector2 adjustedMouseDelta = mouseDelta;
+				if (chipEditor.WorkArea.GridSnap())
+				{
+					adjustedMouseDelta = MathsHelper.GetDiscretizedVector(mouseDelta, chipEditor.WorkArea.GridDiscretization);
+				}
+				for (int i = 0; i < chipsToMove.Length; i++)
+				{
+					Vector2 targetPos = chipStartPositions[i] + adjustedMouseDelta;
+					chipsToMove[i].transform.position = new Vector3(targetPos.x, targetPos.y, RenderOrder.ChipMoving);
+				}
+			}
+			OnChipsMoved(chipsToMove);
 		}
 
 		void OnChipPressed(ChipBase chip)
